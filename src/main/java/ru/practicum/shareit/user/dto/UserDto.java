@@ -1,5 +1,6 @@
-package ru.practicum.shareit.item.dto;
+package ru.practicum.shareit.user.dto;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -7,16 +8,13 @@ import lombok.Data;
 
 @Data
 @Builder
-public class ItemDto {
+public class UserDto {
     private int id;
     @NotNull
     @NotBlank
     private String name;
-    @NotNull
+    @Email
     @NotBlank
-    private String description;
-    private int owner;
     @NotNull
-    private Boolean available;
-    private String request;
+    private String email;
 }
