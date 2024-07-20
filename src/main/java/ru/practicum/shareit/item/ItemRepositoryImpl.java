@@ -19,23 +19,23 @@ public class ItemRepositoryImpl implements ItemRepository {
     @Override
     public Item getItem(int itemId) {
         log.info("Получение итема из репозитория. getItem({})", itemId);
-        for (List<Item> itemList : items.values()) {
-            for (Item item : itemList) {
-                if (item.getId() == itemId) {
-                    return item;
-                }
-            }
-        }
-        log.error("Вещи с id {}, нет", itemId);
-        throw new ValidationException("Вещи нет");
+        return items.values().stream()
+                .flatMap(List::stream)
+                .filter(item -> item.getId() == itemId)
+                .findFirst()
+                .orElseThrow(() -> {
+                    log.error("Вещи с id {}, нет", itemId);
+                    return new ValidationException("Вещи нет");
+                });
     }
 
     @Override
     public List<Item> allItems() {
         log.info("Получение всех итемов из репозитория. allItems");
-        List<Item> allItems = new ArrayList<>();
-        items.values().forEach(allItems::addAll);
-        return allItems;
+        return items.values().stream()
+                .flatMap(List::stream)
+                .toList();
+
     }
 
     @Override

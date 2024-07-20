@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.practicum.shareit.http.HttpHeadersConstants;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemUpdateDto;
 import ru.practicum.shareit.item.dto.ItemUsersDto;
@@ -32,20 +33,20 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemUsersDto> getAllItems(@RequestHeader("X-Sharer-User-Id") int userId) {
+    public List<ItemUsersDto> getAllItems(@RequestHeader(HttpHeadersConstants.X_SHARER_USER_ID) int userId) {
         log.info("Обработка запроса по эндпоинту @GetMapping getAllItems");
         return itemService.getAllItems(userId);
     }
 
     @PostMapping
-    public ItemDto create(@RequestHeader("X-Sharer-User-Id") int userId,
+    public ItemDto create(@RequestHeader(HttpHeadersConstants.X_SHARER_USER_ID) int userId,
                           @Valid @RequestBody ItemDto itemDto) {
         log.info("Обработка запроса по эндпоинту @PostMapping create");
         return itemService.create(userId, itemDto);
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto update(@RequestHeader("X-Sharer-User-Id") int userId,
+    public ItemDto update(@RequestHeader(HttpHeadersConstants.X_SHARER_USER_ID) int userId,
                           @PathVariable int itemId,
                           @RequestBody ItemUpdateDto itemUpdateDtoDto) {
         log.info("Обработка запроса по эндпоинту @PatchMapping update");

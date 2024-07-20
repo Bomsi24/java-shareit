@@ -6,12 +6,15 @@ import ru.practicum.shareit.user.model.User;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Repository
 @Slf4j
 public class UserRepositoryImpl implements UserRepository {
+    private final Set<String> userEmail = new HashSet<>();
     private final Map<Integer, User> users = new HashMap<>();
     private int lastUserId;
 
@@ -26,6 +29,7 @@ public class UserRepositoryImpl implements UserRepository {
         log.info("Добавление юзера: {} в репозиторий", user.getId());
         user.setId(++lastUserId);
         users.put(user.getId(), user);
+        userEmail.add(user.getEmail());
         return user;
     }
 
@@ -33,13 +37,15 @@ public class UserRepositoryImpl implements UserRepository {
     public User update(int userId, User user) {
         log.info("Обновление юзера: {} в репозитории", userId);
         users.put(userId, user);
+        userEmail.add(user.getEmail());
         return users.get(userId);
     }
 
     @Override
     public void deleteUser(int userId) {
         log.info("Удаление юзера: {} в репозитории", userId);
-        users.remove(userId);
+        User user = users.remove(userId);
+        removeEmail(user.getEmail());
     }
 
     @Override
@@ -52,5 +58,15 @@ public class UserRepositoryImpl implements UserRepository {
     public List<User> getAllUsers() {
         log.info("Получение всех юзеров из репозитория");
         return new ArrayList<>(users.values());
+    }
+
+    @Override
+    public Set<String> getUserEmail() {
+        return userEmail;
+    }
+
+    @Override
+    public void removeEmail(String email) {
+        userEmail.remove(email);
     }
 }
