@@ -49,6 +49,7 @@ public class UserServiceImpl implements UserService {
                 log.error("Указанна существующая почта");
                 throw new InternalServerException("Указанна существующая почта");
             }
+            userRepository.removeEmail(user.getEmail());
             user.setEmail(newUser.getEmail());
             log.info("почта обновлена");
         }
@@ -78,7 +79,6 @@ public class UserServiceImpl implements UserService {
 
     private boolean checkEmail(String email) {
         log.info("Запуск проверки на существование почты");
-        return userRepository.getAllUsers().stream()
-                .anyMatch(user -> user.getEmail().equals(email));
+        return userRepository.getUserEmail().contains(email);
     }
 }
