@@ -21,8 +21,14 @@ public class ErrorHandler {
         return new ErrorResponse("Искомый объект не найден", exception.getMessage());
     }
 
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(ConflictException.class)
+    public ErrorResponse handleConflictException(final ConflictException exception) {
+        return new ErrorResponse("Возникло исключение.", exception.getMessage());
+    }
+
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(value = {Exception.class,InternalServerException.class})
+    @ExceptionHandler(value = { InternalServerException.class})
     public ErrorResponse handleInternalServerErrorException(final InternalServerException exception) {
         return new ErrorResponse("Возникло исключение.", exception.getMessage());
     }
