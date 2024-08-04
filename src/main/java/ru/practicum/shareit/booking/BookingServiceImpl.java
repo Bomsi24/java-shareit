@@ -21,7 +21,6 @@ import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -91,7 +90,6 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingResponseDto update(int userId, int bookingId, boolean approved) {
         log.info("Начала работы метода update Booking");
-        log.info("Запускаем метод на проверку юзера");
         log.info("Запускаем код на получение букинга");
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> {
             log.error("Букинга с id:{}, нет", bookingId);

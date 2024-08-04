@@ -21,6 +21,7 @@ import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -51,79 +52,37 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemCommentsDateDto> getAllItems(int userId) {
         log.info("Начало получение списка всех итемов юзера с id:{}", userId);
-        log.info("Получение итемов");
-        Map<Integer, Item> items1 = itemRepository.findAll().stream()
-                .collect(Collectors.toMap(Item::getId, Function.identity()));
-        log.info("Все итемы: {}", items1.keySet());
+        log.info("Получение списка итемов");
         Map<Integer, Item> items = itemRepository.findItemsByOwnerId(userId)
                 .stream()
                 .collect(Collectors.toMap(Item::getId, Function.identity()));
         if (items.isEmpty()) {
             throw new ValidationException("Список вещей пуст");
         }
-        Map<Integer, Booking> bookings = bookingRepository.findAll()
+        log.info("Получение списка букингов");
+        Map<Integer, Booking> bookings = bookingRepository.findByItemOwner_Id(userId)
+                .orElse(Collections.emptyList())
                 .stream()
                 .collect(Collectors.toMap(booking -> booking.getItem().getId(), Function.identity()));
-        List<ItemCommentsDateDto> itemUsersDto = new ArrayList<>();
-        List<CommentDto> commentDto = CommentMapper.toCommentDtoList(commentRepository.findAll());
-        log.info("Итемы юзера:{}", items.keySet());
-        for (Item item : items.values()) {
-            log.info("Итемы :{}", item.getId());
-        }
-        for(Item item : items.values()) {
-            LocalDateTime start= null;
-            LocalDateTime end = null;
-            if(bookings.containsKey(item.getId())) {
-                Booking booking = bookings.get(item.getId());
-              start = booking.getStart();
-              end = booking.getEnd();
-            }
-            List<CommentDto> commentDtoItem = commentDto.stream()
-                    .filter(comment -> comment.getItemId() == item.getId())
-                    .toList();
-            itemUsersDto.add(ItemMapper.toItemUsersDto(
-                    item, start, end, commentDtoItem));
-        }
 
-       /* for (Booking booking : bookings) {
-            log.info("букинг итем: {}", booking.getItem().getId());
-            if (items.containsKey(booking.getItem().getId())) {
-                Item item = items.get(booking.getItem().getId());
-                List<CommentDto> commentDtoItem = commentDto.stream()
-                        .filter(comment -> comment.getItemId() == item.getId())
-                        .toList();
-                itemUsersDto.add(ItemMapper.toItemUsersDto(
-                        item, booking.getStart(), booking.getEnd(), commentDtoItem));
-            }
-        }*/
-        return itemUsersDto;
-        /*Map<Integer, Booking> bookings1 = bookingRepository.findByBookingByItemsId(items.keySet()).stream()
-                .collect(Collectors.toMap(booking -> booking.getItem().getId(), Function.identity()));
-        log.info("bookings: {}", bookings);
+        log.info("Получение спика комантариев");
+        List<CommentDto> commentDto = CommentMapper.toCommentDtoList(
+                commentRepository.findByItemIdIn(new ArrayList<>(items.keySet())));
 
-        log.info("items: {}", items);
+        log.info("Возврат спика ItemCommentDateDto");
         return items.values().stream()
                 .map(item -> {
-                    Booking booking = bookings.get(item.getId());
-                    return ItemMapper.toItemUsersDto(item, booking.getStart(), booking.getEnd());
-                })
-                .toList();*/
-
-
-
-
-        /*Map<Integer, Booking> bookings = bookingRepository.findByBookingByItemsId(items.keySet())
-                .stream()
-                .collect(Collectors.toMap(booking -> booking.getItem().getId(), Function.identity()));
-        log.info("bookings: {}", bookings);
-        log.info("Создание списка ItemUserDto");
-        return items.values().stream()
-                .map(item -> {
-                    Booking booking = bookings.get(item.getId());
-                    return ItemMapper.toItemUsersDto(item, booking.getStart(), booking.getEnd());
+                    LocalDateTime start = getTime(item, bookings);
+                    LocalDateTime end = getTime(item, bookings);
+                    return ItemMapper.toItemUsersDto(item, start, end, commentDto);
                 })
                 .toList();
-        */
+    }
+
+    private LocalDateTime getTime(Item item, Map<Integer, Booking> bookings) {
+        //Получение даты и времени из букинга по itemId
+        return bookings.getOrDefault(item.getId(), null) != null ?
+                bookings.get(item.getId()).getStart() : null;
     }
 
     @Override
@@ -184,7 +143,7 @@ public class ItemServiceImpl implements ItemService {
                 .map(ItemMapper::toItemDto)
                 .toList();
         log.info("размер {}", itemDto.size());
-        log.info("состав {}",itemDto);
+        log.info("состав {}", itemDto);
         return itemDto;
     }
 

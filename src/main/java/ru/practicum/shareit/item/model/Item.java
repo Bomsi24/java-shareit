@@ -36,7 +36,7 @@ public class Item {
     private User owner;
     @Column(nullable = false, name = "is_available")
     private Boolean available;
-    @Column( name = "request_id")
+    @Column(name = "request_id")
     private String request;
 
     @Override

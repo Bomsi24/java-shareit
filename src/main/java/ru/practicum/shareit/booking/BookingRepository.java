@@ -7,21 +7,12 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.model.Item;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 public interface BookingRepository extends JpaRepository<Booking, Integer> {
-    List<Booking> findAllByItemIn(Collection<Item> items);
 
-    List<Booking> findByItemOwner_Id(int ownerId);
-
-    @Query("SELECT DISTINCT b " +
-            "FROM Booking b " +
-            "JOIN b.item i " +
-            "WHERE i.id IN :items")
-    List<Booking> findByBookingByItemsId(Set<Integer> items);
+    Optional<List<Booking>> findByItemOwner_Id(int ownerId);
 
     Optional<Booking> findByBookerId(int bookerId);
 

@@ -64,8 +64,9 @@ public class ItemController {
 
     @PostMapping("/{itemId}/comment")
     public CommentDto createComment(@RequestHeader(HttpHeadersConstants.X_SHARER_USER_ID) int userId,
-                                 @PathVariable int itemId,
-                                 @RequestBody CommentDto commentDto) {
+                                    @PathVariable int itemId,
+                                    @RequestBody CommentDto commentDto) {
+        log.info("Обработка запроса по эндпоинту @PostMapping createComment");
         return itemService.createComment(userId, itemId, commentDto);
     }
 }

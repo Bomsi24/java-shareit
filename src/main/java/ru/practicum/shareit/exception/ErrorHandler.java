@@ -28,7 +28,7 @@ public class ErrorHandler {
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(value = { InternalServerException.class})
+    @ExceptionHandler(value = {InternalServerException.class})
     public ErrorResponse handleInternalServerErrorException(final InternalServerException exception) {
         return new ErrorResponse("Возникло исключение.", exception.getMessage());
     }
