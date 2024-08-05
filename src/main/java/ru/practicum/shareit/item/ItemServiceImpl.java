@@ -93,6 +93,7 @@ public class ItemServiceImpl implements ItemService {
             return new NotFoundException("Пользователь не найден");
         });
         itemDto.setOwner(userId);
+        itemDto.setRequest("null");
         Item item = itemRepository.save(ItemMapper.toItem(itemDto, user));
         log.info("Получен item: {}", item);
         return ItemMapper.toItemDto(item);
