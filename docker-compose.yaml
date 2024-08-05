@@ -7,11 +7,11 @@ services:
       - "5432:5432"
     volumes:
       - ./volumes/postgres:/var/lib/postgresql/data/
-      - ./shema.sql:/docker-entrypoint-initdb.d/shema.sql
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
     environment:
       POSTGRES_DB: shareit
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: user
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
     command: postgres -c 'log_statement=all'
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U user"]
