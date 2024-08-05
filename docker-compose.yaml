@@ -7,7 +7,7 @@ services:
       - "5432:5432"
     volumes:
       - ./volumes/postgres:/var/lib/postgresql/data/
-      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - ./shema.sql:/docker-entrypoint-initdb.d/shema.sql
     environment:
       POSTGRES_DB: shareit
       POSTGRES_USER: user
