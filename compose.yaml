@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  db:
+    image: postgres
+    container_name: postgres-db
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./volumes/postgres:/var/lib/postgresql/data/
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql  # Добавляем примонтированный файл schema.sql
+    environment:
+      POSTGRES_DB: shareit
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: user
+    command: postgres -c 'log_statement=all'
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user"]
+      interval: 5s
+      retries: 5
+    restart: always
