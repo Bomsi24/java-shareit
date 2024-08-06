@@ -33,3 +33,13 @@ CREATE TABLE IF NOT EXISTS comments (
     user_id BIGINT NOT NULL,
     created_date TIMESTAMP NOT NULL
 );
+
+CREATE INDEX index_name ON items(name);
+CREATE INDEX index_description ON items(description);
+CREATE INDEX bookings_start ON bookings(start_date);
+CREATE INDEX bookings_end ON bookings(end_date);
+CREATE INDEX bookings_item ON bookings(item_id);
+CREATE INDEX bookings_user ON bookings(user_id);
+CREATE INDEX bookings_id ON bookings(id);
+CREATE INDEX comments_id ON comments(id);
+CREATE INDEX items_id ON items(id);
