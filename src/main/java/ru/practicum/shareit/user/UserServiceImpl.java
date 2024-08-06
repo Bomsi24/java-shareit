@@ -20,7 +20,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public UserDto getUser(int id) {
+    public UserDto getUser(Long id) {
         log.info("Начало получения юзера");
         return UserMapper.toUserDto(userRepository.findById(id).orElseThrow(() -> {
             log.error("Пользователь с id:{} не найден", id);
@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto update(int userId, UserDtoUpdate newUser) {
+    public UserDto update(Long userId, UserDtoUpdate newUser) {
         log.info("Начало процесса обновления юзера");
 
         User user = userRepository.findById(userId).orElseThrow(() -> {
@@ -68,7 +68,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(int id) {
+    public void deleteUser(Long id) {
         log.info("Начало процесса удаления юзера");
         userRepository.deleteById(id);
         log.info("Юзер успешно удален");

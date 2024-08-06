@@ -37,7 +37,7 @@ public class ItemServiceImpl implements ItemService {
     private final CommentRepository commentRepository;
 
     @Override
-    public ItemCommentDto getItemById(int itemId) {
+    public ItemCommentDto getItemById(Long itemId) {
         log.info("Начало получение итема по id: {}", itemId);
         log.info("Получение комментариев");
         List<CommentDto> commentDto = CommentMapper.toCommentDtoList(commentRepository.findByItemId(itemId));
@@ -50,17 +50,17 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemCommentsDateDto> getAllItems(int userId) {
+    public List<ItemCommentsDateDto> getAllItems(Long userId) {
         log.info("Начало получение списка всех итемов юзера с id:{}", userId);
         log.info("Получение списка итемов");
-        Map<Integer, Item> items = itemRepository.findItemsByOwnerId(userId)
+        Map<Long, Item> items = itemRepository.findItemsByOwnerId(userId)
                 .stream()
                 .collect(Collectors.toMap(Item::getId, Function.identity()));
         if (items.isEmpty()) {
             throw new ValidationException("Список вещей пуст");
         }
         log.info("Получение списка букингов");
-        Map<Integer, Booking> bookings = bookingRepository.findByItemOwner_Id(userId)
+        Map<Long, Booking> bookings = bookingRepository.findByItemOwner_Id(userId)
                 .orElse(Collections.emptyList())
                 .stream()
                 .collect(Collectors.toMap(booking -> booking.getItem().getId(), Function.identity()));
@@ -79,14 +79,14 @@ public class ItemServiceImpl implements ItemService {
                 .toList();
     }
 
-    private LocalDateTime getTime(Item item, Map<Integer, Booking> bookings) {
+    private LocalDateTime getTime(Item item, Map<Long, Booking> bookings) {
         //Получение даты и времени из букинга по itemId
         return bookings.getOrDefault(item.getId(), null) != null ?
                 bookings.get(item.getId()).getStart() : null;
     }
 
     @Override
-    public ItemDto create(int userId, ItemDto itemDto) {
+    public ItemDto create(Long userId, ItemDto itemDto) {
         log.info("Начало создание итема. id юзера:{} , итем:{}", userId, itemDto);
         User user = userRepository.findById(userId).orElseThrow(() -> {
             log.error("Пользователь с id:{} не найден", userId);
@@ -100,7 +100,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto update(int userId, int itemId, ItemUpdateDto itemUpdateDto) {
+    public ItemDto update(Long userId, Long itemId, ItemUpdateDto itemUpdateDto) {
         log.info("Начало обновления итема id:{}", itemId);
         userRepository.findById(userId).orElseThrow(() -> {
             log.error("Пользователь с id:{} не найден", userId);
@@ -110,7 +110,7 @@ public class ItemServiceImpl implements ItemService {
             log.error("Итем с id{} не найден", itemId);
             return new NotFoundException("Итема с id: " + itemId + " не найден");
         });
-        if (newItem.getOwner().getId() != userId) {
+        if (!newItem.getOwner().getId().equals(userId)) {
             log.error("Указан другой пользователь");
             throw new NotFoundException("Указан другой пользователь");
         }
@@ -149,7 +149,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public CommentDto createComment(int userId, int itemId, CommentDto commentDto) {
+    public CommentDto createComment(Long userId, Long itemId, CommentDto commentDto) {
         User author = userRepository.findById(userId).orElseThrow(() -> {
             log.error("Отсутствует автор с id:{}", userId);
             return new ValidationException("Отсутсвует автор с id: " + userId);

@@ -9,12 +9,12 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class BookingDto {
-    private int id;
+    private Long id;
     @NotNull
     private LocalDateTime start;
     @NotNull
     private LocalDateTime end;
-    private int itemId;
-    private int bookerId;
+    private Long itemId;
+    private Long bookerId;
     private String status;
 }

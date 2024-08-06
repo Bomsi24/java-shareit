@@ -30,27 +30,27 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping("/{itemId}")
-    public ItemCommentDto getItemById(@PathVariable int itemId) {
+    public ItemCommentDto getItemById(@PathVariable Long itemId) {
         log.info("Обработка запроса по эндпоинту @GetMapping getItemById");
         return itemService.getItemById(itemId);
     }
 
     @GetMapping
-    public List<ItemCommentsDateDto> getAllItems(@RequestHeader(HttpHeadersConstants.X_SHARER_USER_ID) int userId) {
+    public List<ItemCommentsDateDto> getAllItems(@RequestHeader(HttpHeadersConstants.X_SHARER_USER_ID) Long userId) {
         log.info("Обработка запроса по эндпоинту @GetMapping getAllItems");
         return itemService.getAllItems(userId);
     }
 
     @PostMapping
-    public ItemDto create(@RequestHeader(HttpHeadersConstants.X_SHARER_USER_ID) int userId,
+    public ItemDto create(@RequestHeader(HttpHeadersConstants.X_SHARER_USER_ID) Long userId,
                           @Valid @RequestBody ItemDto itemDto) {
         log.info("Обработка запроса по эндпоинту @PostMapping create");
         return itemService.create(userId, itemDto);
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto update(@RequestHeader(HttpHeadersConstants.X_SHARER_USER_ID) int userId,
-                          @PathVariable int itemId,
+    public ItemDto update(@RequestHeader(HttpHeadersConstants.X_SHARER_USER_ID) Long userId,
+                          @PathVariable Long itemId,
                           @RequestBody ItemUpdateDto itemUpdateDtoDto) {
         log.info("Обработка запроса по эндпоинту @PatchMapping update");
         return itemService.update(userId, itemId, itemUpdateDtoDto);
@@ -63,8 +63,8 @@ public class ItemController {
     }
 
     @PostMapping("/{itemId}/comment")
-    public CommentDto createComment(@RequestHeader(HttpHeadersConstants.X_SHARER_USER_ID) int userId,
-                                    @PathVariable int itemId,
+    public CommentDto createComment(@RequestHeader(HttpHeadersConstants.X_SHARER_USER_ID) Long userId,
+                                    @PathVariable Long itemId,
                                     @RequestBody CommentDto commentDto) {
         log.info("Обработка запроса по эндпоинту @PostMapping createComment");
         return itemService.createComment(userId, itemId, commentDto);

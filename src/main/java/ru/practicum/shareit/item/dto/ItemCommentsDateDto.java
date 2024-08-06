@@ -9,7 +9,7 @@ import java.util.List;
 @Data
 @Builder
 public class ItemCommentsDateDto {
-    private int id;
+    private Long id;
     private String name;
     private String description;
     private Boolean available;

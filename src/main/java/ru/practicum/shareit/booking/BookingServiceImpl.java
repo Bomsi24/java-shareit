@@ -32,19 +32,19 @@ public class BookingServiceImpl implements BookingService {
     private final ItemRepository itemRepository;
 
     @Override
-    public BookingResponseDto getBooking(int userId, int bookingId) {
+    public BookingResponseDto getBooking(Long userId, Long bookingId) {
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> {
             log.error("Букинга с id:{}, нет", bookingId);
             return new NotFoundException("Букинга с id:" + bookingId + " нет");
         });
 
-        int bookerId = booking.getBooker().getId();
-        int ownerId = booking.getItem().getOwner().getId();
+        Long bookerId = booking.getBooker().getId();
+        Long ownerId = booking.getItem().getOwner().getId();
         log.info("bookingId:{}, ownerId:{}", bookingId, ownerId);
         UserDto bookerDto = UserMapper.toUserDto(booking.getBooker());
         ItemDto itemDto = ItemMapper.toItemDto(booking.getItem());
 
-        if (bookerId == userId || ownerId == userId) {
+        if (bookerId.equals(userId) || ownerId.equals(userId)) {
             return BookingMapper.toBookingResponseDto(booking, bookerDto, itemDto);
         } else {
             log.error("Юзеру с id:{}, нет доступа к информации", userId);
@@ -52,7 +52,7 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-    public BookingResponseDto create(int userId, BookingDto booking) {
+    public BookingResponseDto create(Long userId, BookingDto booking) {
         log.info("Букинг {}", booking);
         log.info("Получение итема из букинга");
         Item item = itemRepository.findById(booking.getItemId()).orElseThrow(() -> {
@@ -88,7 +88,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingResponseDto update(int userId, int bookingId, boolean approved) {
+    public BookingResponseDto update(Long userId, Long bookingId, boolean approved) {
         log.info("Начала работы метода update Booking");
         log.info("Запускаем код на получение букинга");
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> {
@@ -96,9 +96,9 @@ public class BookingServiceImpl implements BookingService {
             return new NotFoundException("Букинга с id:" + bookingId + " нет");
         });
 
-        int itemId = booking.getItem().getOwner().getId();
+        Long itemId = booking.getItem().getOwner().getId();
         log.info("Запускаем проверку что пользователь явялется хозяином вещи");
-        if (itemId != userId) {
+        if (!itemId.equals(userId)) {
             log.error("Юзер c id: {}, не является хозяином вещи с id: {}", itemId, userId);
             throw new ValidationException("Неправильный хозяин вещи");
         }
@@ -111,7 +111,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingResponseDto> getBookings(int bookerId, String state) {
+    public List<BookingResponseDto> getBookings(Long bookerId, String state) {
         try {
             BookingState bookingState = BookingState.valueOf(state);
             Sort sort = Sort.by(Sort.Direction.DESC, "start");
@@ -126,7 +126,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingResponseDto> getBookingsOwner(int userId, String state) {
+    public List<BookingResponseDto> getBookingsOwner(Long userId, String state) {
         log.info("Начало метода getBookingOwner");
         List<Item> items = itemRepository.findItemsByOwnerId(userId);
         if (items == null || items.isEmpty()) {
@@ -156,7 +156,7 @@ public class BookingServiceImpl implements BookingService {
         };
     }
 
-    private List<Booking> retrieveBookingsByBookerId(int bookerId, BookingState bookingState, Sort sort) {
+    private List<Booking> retrieveBookingsByBookerId(Long bookerId, BookingState bookingState, Sort sort) {
         return switch (bookingState) {
             case ALL -> bookingRepository.findAllByBookerId(bookerId, sort);
             case PAST -> bookingRepository.findByBookerIdAndEndIsBefore(bookerId, LocalDateTime.now(), sort);

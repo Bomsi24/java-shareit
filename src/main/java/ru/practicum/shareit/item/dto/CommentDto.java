@@ -8,9 +8,9 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class CommentDto {
-    private int id;
+    private Long id;
     private String text;
-    private int itemId;
+    private Long itemId;
     private String authorName;
     private LocalDateTime created;
 }

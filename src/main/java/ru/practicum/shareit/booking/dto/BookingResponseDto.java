@@ -8,7 +8,7 @@ import ru.practicum.shareit.user.dto.UserDto;
 @Data
 @Builder
 public class BookingResponseDto {
-    private int id;
+    private Long id;
     private String start;
     private String end;
     private String status;

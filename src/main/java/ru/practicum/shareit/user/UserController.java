@@ -25,7 +25,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/{userId}")
-    public UserDto getUser(@PathVariable int userId) {
+    public UserDto getUser(@PathVariable Long userId) {
         log.info("Обработка запроса по эндпоинту @GetMapping getUser");
         return userService.getUser(userId);
     }
@@ -43,14 +43,14 @@ public class UserController {
     }
 
     @PatchMapping("/{userId}")
-    public UserDto update(@PathVariable int userId,
+    public UserDto update(@PathVariable Long userId,
                           @Valid @RequestBody UserDtoUpdate newUser) {
         log.info("Обработка запроса по эндпоинту @PatchMapping update");
         return userService.update(userId, newUser);
     }
 
     @DeleteMapping("/{userId}")
-    public void deleteUser(@PathVariable int userId) {
+    public void deleteUser(@PathVariable Long userId) {
         log.info("Обработка запроса по эндпоинту @DeleteMapping deleteUser");
         userService.deleteUser(userId);
     }
