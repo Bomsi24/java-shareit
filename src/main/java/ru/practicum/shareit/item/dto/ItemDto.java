@@ -8,14 +8,14 @@ import lombok.Data;
 @Data
 @Builder
 public class ItemDto {
-    private int id;
+    private Long id;
     @NotNull
     @NotBlank
     private String name;
     @NotNull
     @NotBlank
     private String description;
-    private int owner;
+    private Long owner;
     @NotNull
     private Boolean available;
     private String request;

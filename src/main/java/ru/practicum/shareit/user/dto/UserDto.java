@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 @Builder
 public class UserDto {
-    private int id;
+    private Long id;
     @NotNull
     @NotBlank
     private String name;

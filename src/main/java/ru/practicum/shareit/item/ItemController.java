@@ -13,9 +13,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.shareit.http.HttpHeadersConstants;
+import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.ItemCommentDto;
+import ru.practicum.shareit.item.dto.ItemCommentsDateDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemUpdateDto;
-import ru.practicum.shareit.item.dto.ItemUsersDto;
+
 
 import java.util.List;
 
@@ -27,27 +30,27 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping("/{itemId}")
-    public ItemDto getItemById(@PathVariable int itemId) {
+    public ItemCommentDto getItemById(@PathVariable Long itemId) {
         log.info("Обработка запроса по эндпоинту @GetMapping getItemById");
         return itemService.getItemById(itemId);
     }
 
     @GetMapping
-    public List<ItemUsersDto> getAllItems(@RequestHeader(HttpHeadersConstants.X_SHARER_USER_ID) int userId) {
+    public List<ItemCommentsDateDto> getAllItems(@RequestHeader(HttpHeadersConstants.X_SHARER_USER_ID) Long userId) {
         log.info("Обработка запроса по эндпоинту @GetMapping getAllItems");
         return itemService.getAllItems(userId);
     }
 
     @PostMapping
-    public ItemDto create(@RequestHeader(HttpHeadersConstants.X_SHARER_USER_ID) int userId,
+    public ItemDto create(@RequestHeader(HttpHeadersConstants.X_SHARER_USER_ID) Long userId,
                           @Valid @RequestBody ItemDto itemDto) {
         log.info("Обработка запроса по эндпоинту @PostMapping create");
         return itemService.create(userId, itemDto);
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto update(@RequestHeader(HttpHeadersConstants.X_SHARER_USER_ID) int userId,
-                          @PathVariable int itemId,
+    public ItemDto update(@RequestHeader(HttpHeadersConstants.X_SHARER_USER_ID) Long userId,
+                          @PathVariable Long itemId,
                           @RequestBody ItemUpdateDto itemUpdateDtoDto) {
         log.info("Обработка запроса по эндпоинту @PatchMapping update");
         return itemService.update(userId, itemId, itemUpdateDtoDto);
@@ -57,5 +60,13 @@ public class ItemController {
     public List<ItemDto> searchItems(@RequestParam String text) {
         log.info("Обработка запроса по эндпоинту @GetMapping searchItems");
         return itemService.searchItems(text);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto createComment(@RequestHeader(HttpHeadersConstants.X_SHARER_USER_ID) Long userId,
+                                    @PathVariable Long itemId,
+                                    @RequestBody CommentDto commentDto) {
+        log.info("Обработка запроса по эндпоинту @PostMapping createComment");
+        return itemService.createComment(userId, itemId, commentDto);
     }
 }

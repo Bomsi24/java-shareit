@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 @Builder
 public class UserDtoUpdate {
-    private int id;
+    private Long id;
     private String name;
     @Email
     private String email;

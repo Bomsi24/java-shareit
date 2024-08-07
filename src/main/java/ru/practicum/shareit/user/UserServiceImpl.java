@@ -3,7 +3,8 @@ package ru.practicum.shareit.user;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.InternalServerException;
+import ru.practicum.shareit.exception.ConflictException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserDtoUpdate;
@@ -19,37 +20,41 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public UserDto getUser(int id) {
+    public UserDto getUser(Long id) {
         log.info("Начало получения юзера");
-        return UserMapper.toUserDto(userRepository.getUser(id));
+        return UserMapper.toUserDto(userRepository.findById(id).orElseThrow(() -> {
+            log.error("Пользователь с id:{} не найден", id);
+            return new NotFoundException("Пользователь не найден");
+        }));
     }
 
     @Override
     public UserDto create(UserDto userDto) {
         log.info("Начало создания юзера: {}", userDto);
-        if (checkEmail(userDto.getEmail())) {
+        if (userRepository.existsByEmail(userDto.getEmail())) {
             log.error("Указанна существующая почта");
-            throw new InternalServerException("Указанная почта уже существует");
+            throw new ConflictException("Указанная почта уже существует");
         }
 
-        User user = userRepository.createUser(UserMapper.toUser(userDto));
+        log.info("Создание юзера в репозитории");
+        User user = userRepository.save(UserMapper.toUser(userDto));
         return UserMapper.toUserDto(user);
     }
 
     @Override
-    public UserDto update(int userId, UserDtoUpdate newUser) {
+    public UserDto update(Long userId, UserDtoUpdate newUser) {
         log.info("Начало процесса обновления юзера");
-        if (!userRepository.userExists(userId)) {
+
+        User user = userRepository.findById(userId).orElseThrow(() -> {
             log.error("Указанный id пользователя не существует");
-            throw new ValidationException("Указан несуществующий пользователь");
-        }
-        User user = userRepository.getUser(userId);
+            return new ValidationException("Указан несуществующий пользователь");
+        });
         if (newUser.getEmail() != null && !newUser.getEmail().equals(user.getEmail())) {
-            if (checkEmail(newUser.getEmail())) {
+            if (userRepository.existsByEmail(newUser.getEmail())) {
                 log.error("Указанна существующая почта");
-                throw new InternalServerException("Указанна существующая почта");
+                throw new ConflictException("Указанна существующая почта");
             }
-            userRepository.removeEmail(user.getEmail());
+            log.info("обновление почты");
             user.setEmail(newUser.getEmail());
             log.info("почта обновлена");
         }
@@ -58,27 +63,22 @@ public class UserServiceImpl implements UserService {
             log.info("имя обновлено");
         }
 
-        userRepository.update(userId, user);
+        userRepository.save(user);
         return UserMapper.toUserDto(user);
     }
 
     @Override
-    public void deleteUser(int id) {
+    public void deleteUser(Long id) {
         log.info("Начало процесса удаления юзера");
-        userRepository.deleteUser(id);
+        userRepository.deleteById(id);
         log.info("Юзер успешно удален");
     }
 
     @Override
     public List<UserDto> getAllUsers() {
         log.info("Начало получения всех юзеров");
-        return userRepository.getAllUsers().stream()
+        return userRepository.findAll().stream()
                 .map(UserMapper::toUserDto)
                 .toList();
-    }
-
-    private boolean checkEmail(String email) {
-        log.info("Запуск проверки на существование почты");
-        return userRepository.getUserEmail().contains(email);
     }
 }
